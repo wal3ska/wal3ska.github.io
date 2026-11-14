@@ -5,6 +5,14 @@
   <meta name="theme-color" content="#3558d4">
   <meta name="description" content="BİL214 için C ve Bash çalışma atölyesi. Hocanın sorularını çöz, kodunu çalıştır, test et ve sanal dosya sistemiyle pratik yap.">
   <title>BİL214 · Çalışma atölyesi</title>
+  <script>
+    // Apply the saved theme before CSS paints, including on slow connections.
+    (()=>{let theme;try{theme=JSON.parse(localStorage.getItem('bil214:v1'))?.theme;}catch{}
+      const dark=theme==='dark'||(theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.dataset.theme=dark?'dark':'light';
+      document.querySelector('meta[name="theme-color"]').content=dark?'#101725':'#3558d4';
+    })();
+  </script>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./styles.css">
 </head>
 <body>

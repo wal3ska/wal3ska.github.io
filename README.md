@@ -22,6 +22,9 @@ Tamamen statiktir; GitHub Pages üzerinde sunucu veya API anahtarı olmadan çal
   dosyaları IndexedDB'de tutulur. JSON yedek dışa/içe aktarma vardır.
 - Masaüstü ve mobil düzen, CodeMirror editörü, Ctrl+Enter çalıştırma,
   Ctrl+S kaydetme, terminalde ok tuşlarıyla geçmiş.
+- **Açık/koyu tema:** üst çubuktaki ay/güneş düğmesinden değiştirilir.
+  İlk açılışta sistem tercihi kullanılır; seçimin tarayıcıda saklanır.
+  Kod editörü, terminal, dosya ağacı ve sonuç ekranları birlikte değişir.
 
 ## Yerelde açma
 

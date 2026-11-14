@@ -9,3 +9,17 @@ Bir tanıtım sayfası yerine doğrudan çalışma masası: solda kaynaklarına 
 - İnceleme: klasik karanlık terminal açılışından vazgeçildi. Uzun süre PDF ve kod karşılaştırmaya uygun açık renk çalışma masası seçildi. Renk, yalnızca etkin seçimi ve test sonucunu taşır.
 
 Kaynak metinler İngilizce olarak korunur; görev özeti, arayüz ve test açıklamaları Türkçedir. Özgün PDF her sorudan açılır. Otomatik sonuçlar çalışma davranışını ölçer; akademik biçim ve karmaşıklık koşulları ayrıca belirtilir.
+
+## Koyu tema
+
+Mevcut çalışma masası düzeni ve yazı sistemi korunur. Gece paleti: zemin
+`#101725`, paneller `#182235`, yükseltilmiş alanlar `#202e45`, metin
+`#e0e8f5`, ikincil metin `#a4b4cc`, mavi vurgu `#91adff`. Başarı ve hata
+renkleri koyu yüzeylerde okunacak şekilde açılır. Kod editörü, satır numaraları,
+seçimler, terminal, dosya ağacı ve diyaloglar aynı paleti kullanır.
+
+Üst çubuktaki ay/güneş düğmesi anında geçiş sağlar; kod editörü yeniden
+oluşturulmaz. İlk açılışta sistem tercihi izlenir, kullanıcının seçimi
+sonraki ziyaretlerde korunur. Yükleme sırasında beyaz parlama önlenir.
+Salt siyah bir terminal yerine mevcut mavi kimliğin gece karşılığı seçildi;
+düzen veya içerik hiyerarşisi değişmez.

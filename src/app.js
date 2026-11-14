@@ -6,6 +6,7 @@ import {shell as shellLanguage} from '@codemirror/legacy-modes/mode/shell';
 import {keymap} from '@codemirror/view';
 import {indentWithTab} from '@codemirror/commands';
 import {Runtime} from './runtime.js';
+import {editorTheme} from './theme.js';
 import {readPreferences,savePreferences,readWorkspace,saveWorkspace} from './storage.js';
 // Keep the grading rules in a small browser-only module; the shell stays in its worker.
 import {checkResult,normalize} from './grading.js';
@@ -16,9 +17,12 @@ const base=new URL('../',import.meta.url);
 const url=p=>new URL(p,base).href;
 const shapes={code:'<path d="m8 7-5 5 5 5m8-10 5 5-5 5M14 4l-4 16"/>',book:'<path d="M4 4h6a3 3 0 0 1 3 3v14a4 4 0 0 0-4-3H4zm9 3a3 3 0 0 1 3-3h5v14h-4a4 4 0 0 0-4 3"/>',terminal:'<path d="m5 6 5 5-5 5m8 1h6"/><rect x="2" y="2" width="20" height="20" rx="3"/>',search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',play:'<path d="m8 5 12 7-12 7z"/>',check:'<path d="m5 12 4 4L19 6"/>',close:'<path d="m6 6 12 12M18 6 6 18"/>',file:'<path d="M13 3H5v18h14V9zM13 3v6h6"/>',folder:'<path d="M3 5h6l2 3h10v12H3z"/>',download:'<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',upload:'<path d="M12 16V4m-5 5 5-5 5 5M4 16v5h16v-5"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9 8a3 3 0 0 1 6 0c0 2-3 2-3 5m0 3v1"/>',reset:'<path d="M3 10a9 9 0 1 1 2 8M3 3v7h7"/>',external:'<path d="M14 3h7v7m0-7L10 14M10 3H3v18h18v-7"/>',left:'<path d="m14 6-6 6 6 6"/>',right:'<path d="m10 6 6 6-6 6"/>',menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',save:'<path d="M4 3h13l4 4v14H3V3zm3 0v6h10V3M7 21v-8h10v8"/>',plus:'<path d="M12 4v16M4 12h16"/>',stop:'<rect x="5" y="5" width="14" height="14" rx="1"/>',shield:'<path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6z"/><path d="m8 12 3 3 5-6"/>'};
 const icon=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapes[n]||shapes.file}</svg>`;
+shapes.sun='<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+shapes.moon='<path d="M20.8 13.1A9 9 0 0 1 10.9 3.2a9 9 0 1 0 9.9 9.9Z"/>';
 let prefs=readPreferences();prefs.drafts??={};prefs.progress??={};
+const systemTheme=matchMedia('(prefers-color-scheme: dark)');
 let questions=[],materials={},view=prefs.view||'questions',qid=prefs.qid||'c3-1',languageFilter='all',search='',onlyTodo=false;
-let editor=null,codeLanguage=new Compartment(),busy=false,output=null,outputTab='output',selectedTest=0;
+let editor=null,codeLanguage=new Compartment(),codeTheme=new Compartment(),busy=false,output=null,outputTab='output',selectedTest=0;
 let labLanguage=prefs.labLanguage||'bash',labState=null,labReady=false,labInitializing=null,labPath=prefs.labPath||'/home/ogrenci/calisma.sh',labCFiles={};
 let terminalLog=[],terminalHistory=[],historyIndex=0,resourceSearch='',resourceFilter='all',treeExpanded=new Set(['/','/home','/home/ogrenci']),questionTree=null;
 let saveTimer,toastTimer,epoch=0;
@@ -36,6 +40,14 @@ function parseArgs(text){
 }
 function toast(message){const t=$('#toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),4500);}
 function persist(){try{prefs={...prefs,view,qid,labLanguage,labPath};savePreferences(prefs);}catch{toast('Tarayıcı kaydı doldu. Yedek indirerek çalışmalarını koru.');}}
+function applyTheme(){
+  const dark=prefs.theme==='dark'||(prefs.theme!=='light'&&systemTheme.matches);
+  document.documentElement.dataset.theme=dark?'dark':'light';
+  document.querySelector('meta[name="theme-color"]').content=dark?'#101725':'#3558d4';
+  const button=$('[data-action="theme"]');
+  if(button){button.innerHTML=icon(dark?'sun':'moon');button.setAttribute('aria-pressed',String(dark));button.title=dark?'Açık temaya geç':'Koyu temaya geç';}
+  if(editor)editor.dispatch({effects:codeTheme.reconfigure(editorTheme(dark))});
+}
 function saveDraft(){if(!editor)return;const key=draftKey();prefs.drafts[key]={code:editor.state.doc.toString(),stdin:$('#stdin')?.value||'',args:$('#args')?.value||''};if(view==='lab'&&labLanguage==='bash'){prefs.fileDrafts??={};const code=editor.state.doc.toString(),saved=labState?.entries.find(x=>x.path===labPath);if(saved?.content===code)delete prefs.fileDrafts[labPath];else prefs.fileDrafts[labPath]=code;}clearTimeout(saveTimer);saveTimer=setTimeout(persist,300);}
 function saveNow(){saveDraft();clearTimeout(saveTimer);persist();}
 function progress(message){const status=$('#run-status');if(status)status.innerHTML=`<span class="working"><i class="spinner"></i>${escape(message)}</span>`;}
@@ -54,11 +66,11 @@ function renderList(){
 }
 function render(){
   editor?.destroy();editor=null;epoch++;
-  $('#app').innerHTML=`<header class="topbar"><button class="quiet icon-button mobile-menu" data-action="menu" aria-label="Soru menüsünü aç">${icon('menu')}</button><div class="brand"><span class="brand-mark">214</span><div><strong>BİL214</strong><small>Sistem programlama atölyesi</small></div></div><nav class="topnav" aria-label="Ana gezinme">${[['questions','book','Sorular'],['lab','terminal','Serbest laboratuvar'],['resources','folder','Kaynaklar']].map(([id,i,t])=>`<button data-view="${id}" class="${view===id?'active':''}" ${view===id?'aria-current="page"':''}>${icon(i)}${t}</button>`).join('')}</nav><div class="top-actions"><span class="local-status"><i class="dot"></i>Tarayıcıda çalışır</span><button class="quiet small" data-action="backup" title="Çalışmalarını yedekle">${icon('download')}<span class="backup-label">Yedekle</span></button><button class="quiet icon-button" data-action="help" aria-label="Yardım">${icon('help')}</button></div></header><div class="app-layout">${view==='questions'?sidebar():''}<main class="main" id="main">${view==='questions'?questionView():view==='lab'?labView():resourceView()}</main></div>`;
+  $('#app').innerHTML=`<header class="topbar"><button class="quiet icon-button mobile-menu" data-action="menu" aria-label="Soru menüsünü aç">${icon('menu')}</button><div class="brand"><span class="brand-mark">214</span><div><strong>BİL214</strong><small>Sistem programlama atölyesi</small></div></div><nav class="topnav" aria-label="Ana gezinme">${[['questions','book','Sorular'],['lab','terminal','Serbest laboratuvar'],['resources','folder','Kaynaklar']].map(([id,i,t])=>`<button data-view="${id}" class="${view===id?'active':''}" ${view===id?'aria-current="page"':''}>${icon(i)}${t}</button>`).join('')}</nav><div class="top-actions"><span class="local-status"><i class="dot"></i>Tarayıcıda çalışır</span><button class="quiet icon-button" data-action="theme" aria-label="Koyu tema" aria-pressed="false" title="Koyu temaya geç">${icon('moon')}</button><button class="quiet small" data-action="backup" title="Çalışmalarını yedekle">${icon('download')}<span class="backup-label">Yedekle</span></button><button class="quiet icon-button" data-action="help" aria-label="Yardım">${icon('help')}</button></div></header><div class="app-layout">${view==='questions'?sidebar():''}<main class="main" id="main">${view==='questions'?questionView():view==='lab'?labView():resourceView()}</main></div>`;
   if(view==='questions'){renderList();mountEditor(current().language);renderOutput();renderQuestionTree();}
   if(view==='lab'){mountEditor(labLanguage);renderTree();renderTerminal();if(labLanguage==='c')renderOutput();}
   if(view==='resources')renderResources();
-  setBusy(busy);
+  applyTheme();setBusy(busy);
 }
 function questionView(){
   const q=current(),test=q.tests[selectedTest]||q.tests[0];const index=questions.indexOf(q);
@@ -79,7 +91,7 @@ function outputPanel(){return `<section class="output-panel"><div class="output-
 function mountEditor(lang){
   const parent=$('#editor');if(!parent)return;
   const readLang=current()?.mode==='prediction'&&view==='questions'?'text':lang;
-  editor=new EditorView({parent,state:EditorState.create({doc:getDraft().code,extensions:[basicSetup,keymap.of([indentWithTab,{key:'Mod-Enter',run:()=>{runCode(false);return true;}},{key:'Mod-s',run:()=>{view==='lab'&&labLanguage==='bash'?saveFile():saveNow();return true;}}]),codeLanguage.of(readLang==='c'?cpp():readLang==='bash'?StreamLanguage.define(shellLanguage):[]),EditorView.lineWrapping,EditorView.contentAttributes.of({'aria-label':readLang==='text'?'Çıktı cevabı':'Kod editörü',spellcheck:'false'}),EditorView.updateListener.of(update=>{if(update.docChanged)saveDraft();})]})});
+  editor=new EditorView({parent,state:EditorState.create({doc:getDraft().code,extensions:[basicSetup,codeTheme.of(editorTheme(document.documentElement.dataset.theme==='dark')),keymap.of([indentWithTab,{key:'Mod-Enter',run:()=>{runCode(false);return true;}},{key:'Mod-s',run:()=>{view==='lab'&&labLanguage==='bash'?saveFile():saveNow();return true;}}]),codeLanguage.of(readLang==='c'?cpp():readLang==='bash'?StreamLanguage.define(shellLanguage):[]),EditorView.lineWrapping,EditorView.contentAttributes.of({'aria-label':readLang==='text'?'Çıktı cevabı':'Kod editörü',spellcheck:'false'}),EditorView.updateListener.of(update=>{if(update.docChanged)saveDraft();})]})});
 }
 function replaceCode(code){editor.dispatch({changes:{from:0,to:editor.state.doc.length,insert:code}});saveNow();}
 function renderOutput(){
@@ -192,6 +204,7 @@ document.addEventListener('click',async e=>{
     else modal(`<h2>${escape(f.path.split('/').at(-1))}</h2><p class="source-path">${escape(f.path)}</p><pre>${escape(f.content??f.target??'(boş)')}</pre>`);return;
   }
   switch(b.dataset.action){
+    case 'theme':prefs.theme=document.documentElement.dataset.theme==='dark'?'light':'dark';applyTheme();persist();break;
     case 'menu':$('#sidebar')?.classList.toggle('open');break;
     case 'run':await runCode(false);break;
     case 'grade':await runCode(true);break;
@@ -230,6 +243,8 @@ document.addEventListener('change',async e=>{
 document.addEventListener('submit',e=>{if(e.target.id==='terminal-form'){e.preventDefault();const input=$('#terminal-command'),command=input.value;input.value='';terminal(command);}});
 document.addEventListener('keydown',e=>{if(e.target.id==='terminal-command'&&['ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();historyIndex=Math.max(0,Math.min(terminalHistory.length,historyIndex+(e.key==='ArrowUp'?-1:1)));e.target.value=terminalHistory[historyIndex]||'';}});
 window.addEventListener('beforeunload',()=>saveNow());
+applyTheme();
+systemTheme.addEventListener('change',()=>{if(!['light','dark'].includes(prefs.theme))applyTheme();});
 try{
   const responses=await Promise.all([fetch(url('data/questions.json')),fetch(url('data/materials.json'))]);
   if(responses.some(r=>!r.ok))throw Error('Ders içerikleri yüklenemedi.');
