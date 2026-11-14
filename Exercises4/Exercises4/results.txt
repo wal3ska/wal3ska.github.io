@@ -1,0 +1,97 @@
+----------------------------------------initials----------------------------------------
+10 55 20 45 30 35 40 25 50 15
+9 8 7 6 5 4 3 2 1 0
+-1 -2 -3 -4 -5 -6 -7 -8 -9 0
+8 6 4 2 0 8 6 4 2 0
+11 15 21 29 26 22 18 14 8 4
+0 -5 -10 -11 -3 3 -11 20 30 40
+System Programming
+Deep Learning
+Computer Vision
+Artificial Neural Network
+Machine Learning
+Data Structure
+Computer Engineering
+Artificial Intelligence
+Linear Algebra
+Data Science
+@gmail
+101 BIL
+<stdio.h>
+---Linux---
+#of
+
+----------------------------------------soru01----------------------------------------
+Linear Algebra
+lINEAR aLGEBRA
+Data Science
+dATA sCIENCE
+@gmail
+@GMAIL
+101 BIL
+101 bil
+<stdio.h>
+<STDIO.H>
+
+----------------------------------------soru02----------------------------------------
+'N' is 11-th character in 'Artificial Neural Network'
+'k' is 24-th character in 'Artificial Neural Network'
+'e' is 6-th character in 'Computer Engineering'
+'e' is 8-th character in 'Data Science'
+'1' is 0-th character in '101 BIL'
+'-' is 0-th character in '---Linux---'
+'n' is (nil) in 'Artificial Neural Network'
+
+----------------------------------------soru03----------------------------------------
+'N' is 18-th character in 'Artificial Neural Network'
+'k' is 24-th character in 'Artificial Neural Network'
+'e' is 15-th character in 'Computer Engineering'
+'e' is 11-th character in 'Data Science'
+'1' is 2-th character in '101 BIL'
+'-' is 10-th character in '---Linux---'
+'n' is (nil) in 'Artificial Neural Network'
+
+----------------------------------------soru04----------------------------------------
+Artificial Neural Network  2
+Artificial Intelligence  4
+@gmail  0
+101 BIL  2
+<stdio.h>  1
+---Linux---  6
+
+----------------------------------------soru05----------------------------------------
+Computer Engineering
+Computr Enginring  3
+Computr Enginring  0
+Artificial Intelligence
+Artificial Intllignc  3
+Artificia Intignc  3
+Linear Algebra
+Linar Algbra  2
+Linar Agbra  1
+
+----------------------------------------soru06----------------------------------------
+'Artificial Neural Network' is LATER than 'Artificial Intelligence'
+'Data Science' is EARLIER than 'Deep Learning'
+'System Programming' is LATER than '101 BIL'
+'Computer Engineering' is EQUAL to 'Computer Engineering'
+
+----------------------------------------soru07----------------------------------------
+ABCDEEDCBA   Palindrome
+A _.5._ A   Palindrome
+123 .4 321   Not palindrome
+123 .4. 21   Not palindrome
+12a__-P-__a21   Palindrome
+
+----------------------------------------soru08----------------------------------------
+Maximum: 99
+Maximum: 29
+Maximum: 25
+
+----------------------------------------soru09----------------------------------------
+Minimum: -11
+Minimum: -9
+Minimum: 0
+
+----------------------------------------soru10----------------------------------------
+18 13 15 25 16 14 20 23 14 12 6 7 9 11 3

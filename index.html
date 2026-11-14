@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#3558d4">
+  <meta name="description" content="BİL214 için C ve Bash çalışma atölyesi. Hocanın sorularını çöz, kodunu çalıştır, test et ve sanal dosya sistemiyle pratik yap.">
+  <title>BİL214 · Çalışma atölyesi</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="app"><div class="initial-loader"><span class="brand-mark">214</span><p>Çalışma atölyesi hazırlanıyor…</p></div></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="modal"><div id="modal-body"></div><form method="dialog"><button class="button" autofocus>Kapat</button></form></dialog>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+  <noscript>Bu çalışma alanını kullanmak için JavaScript’i etkinleştir.</noscript>
+  <script type="module" src="./assets/app.js"></script>
+</body>
+</html>

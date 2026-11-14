@@ -1,0 +1,173 @@
+ 1826  ls
+ 1827  pwd
+ 1828  ls /
+ 1829  pwd
+ 1830  ls
+ 1831  ls /home/bil214
+ 1832  ls
+ 1833  cat /etc/shells
+ 1834  dash
+ 1835  echo $SHELL
+ 1836  dash
+ 1837  ls
+ 1838  ls --help
+ 1839  ls -a
+ 1840  ls -l
+ 1841  ls -l -a
+ 1842  ls -a -l
+ 1843  ls -al
+ 1844  ls -la
+ 1845  ls --help
+ 1846  ls /home
+ 1847  ls /home -l
+ 1848  ls -l /home
+ 1849  ls -l /home -a
+ 1850  echo $SHELL
+ 1851  x=00111
+ 1852  echo $x
+ 1853  echo x
+ 1854  echo
+ 1855  echo $xx
+ 1856  x="55"
+ 1857  echo $x
+ 1858  x="55 a fs"
+ 1859  echo $x
+ 1860  bb
+ 1861  echo $y
+ 1862  ./test.sh 
+ 1863  pwd
+ 1864  ls
+ 1865  ls /echo $x
+ 1866  bb
+ 1867  echo $y
+ 1868  ls /home/bil214/exercises03
+ 1869  ls /home/bil214/Exercises03
+ 1870  pwd
+ 1871  ls Exercises03
+ 1872  ls Exercises03/main.c
+ 1873  ls Exercises03/main.c -l
+ 1874  ls .
+ 1875  ls ./Exercises03/main.c -l
+ 1876  ./test.sh 
+ 1877  ls ..
+ 1878  ls /
+ 1879  ls /init
+ 1880  pwd
+ 1881  ls ../../init
+ 1882  ls ../../tmp
+ 1883  ls /
+ 1884  ls ../../sys
+ 1885  bash
+ 1886  echo $x
+ 1887  bb
+ 1888  echo $y
+ 1889  ls
+ 1890  ls -a
+ 1891  ls -a -l
+ 1892  ls -l -a
+ 1893  ls --all
+ 1894  ls --help
+ 1895  ls -al
+ 1896  ls -la
+ 1897  ls
+ 1898  ls /
+ 1899  ls /home
+ 1900  ls /home/bil214
+ 1901  ls /home/bil214/test.sh
+ 1902  ls /home/bil214/test.sh -l
+ 1903  ls -l /home/bil214/test.sh
+ 1904  pwd
+ 1905  ls
+ 1906  ls .
+ 1907  cat test.sh
+ 1908  test.sh
+ 1909  ./test.sh
+ 1910  ls
+ 1911  /bin/ls
+ 1912  cp test.sh file
+ 1913  cat file
+ 1914  ./file
+ 1915  rm file
+ 1916  ls ..
+ 1917  ls ../..
+ 1918  ls ../../opt
+ 1919  ls ../../proc
+ 1920  x="35"
+ 1921  x="45"
+ 1922  exho $x
+ 1923  echo $x
+ 1924  echo "$x"
+ 1925  echo "as $x 111"
+ 1926  echo pwd
+ 1927  pwd ls
+ 1928  ls pwd
+ 1929  y="as $x 111"
+ 1930  echo $y
+ 1931  echo "$y"
+ 1932  echo $a
+ 1933  echo "$a 3"
+ 1934  env
+ 1935  echo $SHELL
+ 1936  pwd
+ 1937  PWD
+ 1938  $PWD
+ 1939  echo $PWD
+ 1940  echo $PATH
+ 1941  ls ~
+ 1942  ls /home
+ 1943  ls ~
+ 1944  ls -l
+ 1945  pwd
+ 1946  ls
+ 1947  cd Lab1
+ 1948  pwd
+ 1949  ls ../../..
+ 1950  cd ../../..
+ 1951  pwd
+ 1952  cd home/bil214/
+ 1953  pwd
+ 1954  man cat
+ 1955  cat --help
+ 1956  apropos concat
+ 1957  ls
+ 1958  mkdir Lab1/dir1
+ 1959  mkdir Quiz01/dir1
+ 1960  ls Quiz01
+ 1961  rmdir Quiz01/dir1
+ 1962  ls Quiz01
+ 1963  ls
+ 1964  mv test.sh Quiz01/file11
+ 1965  ls Quiz01
+ 1966  mv Quiz01/file11 .
+ 1967  ls
+ 1968  mv file11 test.sh
+ 1969  ./test.sh 
+ 1970  ls
+ 1971  ls -R
+ 1972  ls
+ 1973  cp test.sh ./asd
+ 1974  ls
+ 1975  rm asd
+ 1976  ls
+ 1977  ls . -name file1
+ 1978  find . -name file1
+ 1979  find /home/bil214 -name file1
+ 1980  touch file
+ 1981  ls
+ 1982  touch ../file1
+ 1983  touch Quiz01/file1
+ 1984  ls Quiz01
+ 1985  mv Quiz01/file1 ./file2
+ 1986  ls
+ 1987  rm file
+ 1988  rm file2
+ 1989  ls
+ 1990  mkdir dir1
+ 1991  ls
+ 1992  touch dir1/file1
+ 1993  ls dir1
+ 1994  rm -r dir1
+ 1995  ls
+ 1996  history --help
+ 1997  history 1000 > history.txt
+ 1998  history > history.txt

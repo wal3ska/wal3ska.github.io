@@ -1,0 +1,22 @@
+{
+  "name": "bil214-calisma-atolyesi",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "node tests/browser.mjs",
+    "content": "node scripts/create-questions.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "dependencies": {
+    "just-bash": "3.6.0",
+    "codemirror": "6.0.2",
+    "@codemirror/lang-cpp": "6.0.3",
+    "@codemirror/legacy-modes": "6.5.2",
+    "@codemirror/language": "6.12.3"
+  },
+  "devDependencies": { "esbuild": "0.27.4" }
+}

@@ -1,0 +1,16 @@
+import {build} from 'esbuild';
+import {workspaceResolver} from './workspace-resolver.mjs';
+import {mkdir,cp,writeFile,readFile} from 'node:fs/promises';
+await mkdir('dist/assets',{recursive:true});
+await build({entryPoints:['src/app.js','src/bash-worker.js'],outdir:'dist/assets',bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true,tsconfigRaw:{compilerOptions:{}},plugins:process.env.BIL214_SANDBOX_BUILD?[workspaceResolver(process.cwd())]:[],alias:{'node:zlib':'./src/zlib-shim.js'},external:['node:module','node:fs','node:path','node:crypto','node:os','node:child_process','@mongodb-js/zstd','node-liblzma','seek-bzip'],logLevel:'info'});
+for(const file of ['index.html','styles.css','favicon.svg','sw.js']) await cp(file,`dist/${file}`);
+await cp('THIRD_PARTY_NOTICES.md','dist/THIRD_PARTY_NOTICES.md');
+await import('./licenses.mjs');
+await cp('src/c-worker.js','dist/assets/c-worker.js');
+await cp('vendor','dist/vendor',{recursive:true});
+await mkdir('dist/data',{recursive:true});
+for(const file of ['materials.json','questions.json']) await cp(`data/${file}`,`dist/data/${file}`);
+const material=JSON.parse(await readFile('data/materials.json','utf8'));
+for(const file of material.documents) await cp(file.path,`dist/${file.path}`);
+await writeFile('dist/.nojekyll','');
+console.log(`Built dist: ${material.documents.length} PDFs and ${material.examples.length} source/data files in the searchable archive.`);

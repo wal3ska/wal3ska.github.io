@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+*.zip binary
+*.tar binary
+*.wasm binary
+vendor/clang/clang binary
+vendor/clang/lld binary
+vendor/clang/memfs binary
