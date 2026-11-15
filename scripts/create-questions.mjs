@@ -29,6 +29,8 @@ for(const q of questions){
   if(!d)throw Error('Source missing: '+q.source);
   q.original=d.pages[q.page-1];
   q.testCount=q.tests.length;
+  if(typeof solutions[q.id]!=='string'||!solutions[q.id].trim())throw Error('Answer missing: '+q.id);
+  q.answer=solutions[q.id];
 }
 if(questions.length!==100)throw Error('Unexpected question count '+questions.length);
 await mkdir('tests',{recursive:true});

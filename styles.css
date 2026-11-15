@@ -41,3 +41,13 @@ dialog{background:var(--surface)}
 [data-action="theme"]{width:35px;height:35px;flex-shrink:0}
 [data-action="theme"][aria-pressed="true"]{color:var(--blue);background:var(--blue-tint)}
 .cm-tooltip,.cm-panels{border-color:var(--line)!important}
+
+/* Answers stay behind an explicit action and use the existing themed dialog. */
+.answer-access{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.answer-access button{width:100%;justify-content:space-between;font-size:12px}
+.answer-access button span{display:flex;align-items:center;gap:8px}
+.answer-question{font-size:13px;line-height:1.65;margin:0 0 10px}
+.answer-description{color:var(--muted);font-size:12px;line-height:1.7;margin:0 0 18px}
+.answer-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+dialog .answer-code{white-space:pre-wrap;overflow-wrap:anywhere;tab-size:4;max-height:48vh;line-height:1.8}
+.answer-code code{font:inherit;color:inherit;background:transparent;padding:0}

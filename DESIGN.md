@@ -23,3 +23,11 @@ oluşturulmaz. İlk açılışta sistem tercihi izlenir, kullanıcının seçimi
 sonraki ziyaretlerde korunur. Yükleme sırasında beyaz parlama önlenir.
 Salt siyah bir terminal yerine mevcut mavi kimliğin gece karşılığı seçildi;
 düzen veya içerik hiyerarşisi değişmez.
+
+## Cevap anahtarı
+
+Soru panelinin altındaki tek bir düğme, o sorunun çözümünü mevcut diyalog
+penceresinde açar. Çözümler ilk görünümde kapalıdır. Pencere soru kimliğini,
+testlerden geçen örnek çözümü ve kopyalama düğmesini gösterir. Mevcut yazı,
+mavi vurgu ve açık/koyu tema renkleri kullanılır; kod alanı mobilde kaydırılır.
+Öğrencinin editördeki taslağı ve ilerlemesi bu görünümden etkilenmez.

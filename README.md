@@ -18,6 +18,8 @@ Tamamen statiktir; GitHub Pages üzerinde sunucu veya API anahtarı olmadan çal
   borular, değişkenler, diziler ve fonksiyonlar.
 - **Doğru/yanlış değerlendirmesi:** test başına beklenen ve oluşan çıktı;
   dosya sorularında eksik, fazla veya farklı dosyalar.
+- **Cevap anahtarı:** her sorunun altındaki düğme, testlerden geçen örnek
+  çözümü açılır pencerede gösterir. Çözüm tek tıkla kopyalanabilir.
 - **Kalıcı çalışma alanı:** taslaklar ve ilerleme localStorage'da, Bash
   dosyaları IndexedDB'de tutulur. JSON yedek dışa/içe aktarma vardır.
 - Masaüstü ve mobil düzen, CodeMirror editörü, Ctrl+Enter çalıştırma,
@@ -138,8 +140,9 @@ npm run package
 `npm test`, envanteri, Bash referanslarını, dosya karşılaştırmasını, bütün
 C çözümlerini gerçek WebAssembly derleyicisinde ve yanlış çözümlerin
 reddedilmesini kontrol eder. `npm run content`, `content/` tanımlarından
-soruları/testleri üretir. Referans çözümler `tests/` içindedir; siteye
-kopyalanmaz. İstemcideki test verileri gizli değildir.
+soruları/testleri üretir. Referans çözümler `tests/solutions.json` içindedir;
+aynı çözümler `data/questions.json` dosyasına cevap anahtarı olarak eklenir.
+İstemcideki testler ve cevap anahtarları gizli değildir.
 
 Tarayıcı kontrolü için Playwright kurulu bir ortamda sunucu açıkken
 `npm run test:browser` çalıştırılır. `PLAYWRIGHT_ENTRY` kurulu Playwright'ın

@@ -19,6 +19,7 @@ const shapes={code:'<path d="m8 7-5 5 5 5m8-10 5 5-5 5M14 4l-4 16"/>',book:'<pat
 const icon=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapes[n]||shapes.file}</svg>`;
 shapes.sun='<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
 shapes.moon='<path d="M20.8 13.1A9 9 0 0 1 10.9 3.2a9 9 0 1 0 9.9 9.9Z"/>';
+shapes.copy='<rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>';
 let prefs=readPreferences();prefs.drafts??={};prefs.progress??={};
 const systemTheme=matchMedia('(prefers-color-scheme: dark)');
 let questions=[],materials={},view=prefs.view||'questions',qid=prefs.qid||'c3-1',languageFilter='all',search='',onlyTodo=false;
@@ -53,7 +54,25 @@ function saveNow(){saveDraft();clearTimeout(saveTimer);persist();}
 function progress(message){const status=$('#run-status');if(status)status.innerHTML=`<span class="working"><i class="spinner"></i>${escape(message)}</span>`;}
 function setBusy(value){busy=value;document.querySelectorAll('[data-run]').forEach(b=>b.disabled=value);const stop=$('[data-action="stop"]');if(stop)stop.hidden=!value;}
 function cancel(){if(!busy)return;cRuntime.stop();bashRuntime.stop();labReady=false;setBusy(false);}
-function modal(html){$('#modal-body').innerHTML=html;$('#modal').showModal();}
+function modal(html){
+  $('#modal-body').innerHTML=html;
+  const title=$('#modal-body h2');
+  if(title){title.id='modal-title';$('#modal').setAttribute('aria-labelledby','modal-title');}
+  else $('#modal').removeAttribute('aria-labelledby');
+  $('#modal').showModal();
+}
+function showAnswer(){
+  const q=current();
+  if(typeof q.answer!=='string'){toast('Cevap anahtarı yüklenemedi. Sayfayı yenile.');return;}
+  const prediction=q.mode==='prediction';
+  const guidance=prediction?'Betiğin beklenen çıktısı aşağıda.':q.mode==='function'?'Yalnızca fonksiyonu yaz; main test sistemi tarafından eklenir.':q.language==='bash'?'Komutları sorunun başlangıç dosyaları ve çalışma konumuyla dene.':'main dahil tam program aşağıda.';
+  modal(`<h2>Cevap anahtarı</h2><p class="answer-question">${escape(q.set)} · ${escape(q.number)} · ${escape(q.title)}</p><p class="answer-description">${prediction?'Çıktı tahmini sorusunun cevabı.':'Bu atölye için hazırlanmış, testlerden geçen örnek çözüm. Farklı doğru çözümler de olabilir.'} ${guidance}</p><div class="answer-toolbar"><span class="language-badge ${q.language}">${prediction?'Beklenen çıktı':q.language==='c'?'C çözümü':'Bash çözümü'}</span><button class="small" data-action="copy-answer" data-answer-id="${escape(q.id)}">${icon('copy')}Kopyala</button></div><pre class="answer-code" id="answer-code" tabindex="0" aria-label="${prediction?'Beklenen çıktı':'Örnek çözüm kodu'}"><code>${escape(q.answer)}</code></pre><p class="note">${escape(q.note)}</p>`);
+}
+async function copyAnswer(id){
+  const q=questions.find(q=>q.id===id);if(typeof q?.answer!=='string')return;
+  try{await navigator.clipboard.writeText(q.answer);toast('Cevap anahtarı kopyalandı.');}
+  catch{const code=$('#answer-code');if(!code)return;const range=document.createRange();range.selectNodeContents(code);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);code.focus();toast('Cevap seçildi. Ctrl+C ile veya seçim menüsünden kopyala.');}
+}
 function sidebar(){return `<aside class="sidebar" id="sidebar"><div class="sidebar-top"><div class="sidebar-heading"><strong>Soru bankası</strong><span class="count">${questions.length}</span></div><div class="searchbox">${icon('search')}<input id="question-search" aria-label="Sorularda ara" placeholder="Soru veya konu ara…" value="${escape(search)}"></div><div class="filters" role="group" aria-label="Dil filtresi">${[['all','Tümü'],['c','C'],['bash','Bash']].map(([id,t])=>`<button data-filter="${id}" class="${languageFilter===id?'active':''}">${t}</button>`).join('')}</div><button class="question-filter-state ${onlyTodo?'secondary':''}" data-action="todo">${onlyTodo?'Tüm soruları göster':'Yalnızca çözülmeyenler'}</button></div><div class="question-list" id="question-list"></div><div class="sidebar-footer"><div class="progress-label"><span>Çalışma ilerlemen</span><strong id="progress-count"></strong></div><div class="progress-track"><span id="progress-bar"></span></div></div></aside>`;}
 function renderList(){
   const list=$('#question-list');if(!list)return;
@@ -79,7 +98,7 @@ function questionView(){
   ${q.script?`<div class="example-box"><pre>${escape(q.script)}</pre></div>`:''}
   ${q.mode!=='prediction'?`<hr class="divider"><h3>Bir örnekle başlayalım</h3><div class="example-box"><div class="label">${q.mode==='function'?'Fonksiyon girdisi':'Standart girdi / argümanlar'}</div><pre>${escape(test.display||[test.stdin?.trim(),test.args?.length?'$ '+formatArgs(test.args):''].filter(Boolean).join('\n')||test.cwd||'Girdi gerekmiyor')}</pre></div><div class="example-box"><div class="label">Beklenen ${q.ignoreStdout?'çıkış kodu':'çıktı'}</div><pre>${escape(q.ignoreStdout?String(test.exitCode):test.expected?.trim()||'(çıktı yok; dosya sistemi kontrol edilir)')}</pre></div>`:''}
   ${q.language==='bash'&&q.mode!=='prediction'?'<details open><summary>Başlangıç dosyaları</summary><div id="question-tree" class="question-files"></div></details>':''}
-  <details><summary>Küçük bir ipucu</summary><p>${escape(q.hint)}</p></details><details><summary>Hocanın kaynak metni</summary><p class="muted">Kaynak sayfasının metni; şekiller ve yerleşim için PDF’yi aç.</p><pre>${escape(q.original)}</pre></details><p class="note">${escape(q.note)}</p></div><div class="question-panel-footer">${icon('shield')} Kodun ve ilerlemen bu tarayıcıda saklanır.</div></section><div class="workspace-right">${editorPanel(q.language,q.mode==='prediction'?'cikti.txt':q.language==='c'?'cozum.c':'cozum.sh',q)}${outputPanel()}</div></div><div class="statusbar"><span>TOBB ETÜ · BİL214 · 2026 Güz</span><span>Testler davranışı kontrol eder. Sınav kuralları kaynak PDF’dedir.</span></div>`;
+  <details><summary>Küçük bir ipucu</summary><p>${escape(q.hint)}</p></details><details><summary>Hocanın kaynak metni</summary><p class="muted">Kaynak sayfasının metni; şekiller ve yerleşim için PDF’yi aç.</p><pre>${escape(q.original)}</pre></details><p class="note">${escape(q.note)}</p><div class="answer-access"><button class="secondary" data-action="answer-key" aria-haspopup="dialog" aria-controls="modal"><span>${icon('book')}Cevap anahtarı</span>${icon('right')}</button></div></div><div class="question-panel-footer">${icon('shield')} Kodun ve ilerlemen bu tarayıcıda saklanır.</div></section><div class="workspace-right">${editorPanel(q.language,q.mode==='prediction'?'cikti.txt':q.language==='c'?'cozum.c':'cozum.sh',q)}${outputPanel()}</div></div><div class="statusbar"><span>TOBB ETÜ · BİL214 · 2026 Güz</span><span>Testler davranışı kontrol eder. Sınav kuralları kaynak PDF’dedir.</span></div>`;
 }
 function editorPanel(lang,filename,q){
   const draft=getDraft(),prediction=q?.mode==='prediction';
@@ -204,6 +223,8 @@ document.addEventListener('click',async e=>{
     else modal(`<h2>${escape(f.path.split('/').at(-1))}</h2><p class="source-path">${escape(f.path)}</p><pre>${escape(f.content??f.target??'(boş)')}</pre>`);return;
   }
   switch(b.dataset.action){
+    case 'answer-key':showAnswer();break;
+    case 'copy-answer':await copyAnswer(b.dataset.answerId);break;
     case 'theme':prefs.theme=document.documentElement.dataset.theme==='dark'?'light':'dark';applyTheme();persist();break;
     case 'menu':$('#sidebar')?.classList.toggle('open');break;
     case 'run':await runCode(false);break;
@@ -246,7 +267,7 @@ window.addEventListener('beforeunload',()=>saveNow());
 applyTheme();
 systemTheme.addEventListener('change',()=>{if(!['light','dark'].includes(prefs.theme))applyTheme();});
 try{
-  const responses=await Promise.all([fetch(url('data/questions.json')),fetch(url('data/materials.json'))]);
+  const responses=await Promise.all([fetch(url('data/questions.json'),{cache:'no-cache'}),fetch(url('data/materials.json'),{cache:'no-cache'})]);
   if(responses.some(r=>!r.ok))throw Error('Ders içerikleri yüklenemedi.');
   [questions,materials]=await Promise.all(responses.map(r=>r.json()));
   if(!questions.some(q=>q.id===qid))qid=questions[0].id;
